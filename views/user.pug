@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  .w3-card-4
+    h1 Welcome #{user.nickname}
+    img(src=user.picture width=200)
+    h2 User profile
+    pre
+      code #{userProfile}

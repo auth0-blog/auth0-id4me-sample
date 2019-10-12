@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  .w3-container
+    if locals.user
+      h4 You are logged in!
+    else
+      h4 You are not logged in!
+      form(method='GET' action='/prelogin')
+        h4 User ID (Domain): #[input(id="userid" name="userid")]
+        h4 #[button(type="submit") ]
