@@ -133,8 +133,7 @@ function getManagementApiToken(req, res) {
     request(options, function (error, response, body) {
 
       if (error || response.statusCode === 400 || response.statusCode === 401) {
-        // throw new Error(error);
-        res.redirect('/'); // TODO handle error
+        res.redirect('/');
       } else {
         AUTH0_MANAGEMENT_API_TOKEN = JSON.parse(response.body)['access_token'];
         checkDns(req, res);
@@ -226,12 +225,12 @@ function dynamicClientRegistrationAtAuthority(req, res, idAuthority) {
           var idAuthorityClient = body;
           dynamicConnectionRegistrationAtAuth0(req, res, idAuthorityDiscoveryDoc, idAuthorityClient);
         } else {
-          res.redirect('/'); // TODO handle error
+          res.redirect('/');
         }
       });
 
     } else {
-      res.redirect('/'); // TODO handle error
+      res.redirect('/');
     }
 
   });
