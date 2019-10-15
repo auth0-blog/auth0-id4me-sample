@@ -11,7 +11,7 @@ var jwt = require('jsonwebtoken');
 
 dotenv.config();
 
-var AUTH0_MANAGEMENT_API_TOKEN;
+var auth0_management_api_token;
 
 // ========== Routes =============
 
@@ -112,19 +112,19 @@ function handlePreLogin(req, res) {
  * Upon access token retrieval, it calls the checkDns function.
  */
 function getManagementApiToken(req, res) {
-  var accessExistsAndNotExpired = false;
+  var accessTokenExistsAndNotExpired = false;
 
   // check if we already have a valid non-expired access token in memory.
-  if (AUTH0_MANAGEMENT_API_TOKEN) {
-    var decoded = jwt.decode(AUTH0_MANAGEMENT_API_TOKEN, {complete: true});
+  if (auth0_management_api_token) {
+    var decoded = jwt.decode(auth0_management_api_token, {complete: true});
     if (new Date().getTime() > decoded.payload.exp) {
-      accessExistsAndNotExpired = true;
+      accessTokenExistsAndNotExpired = true;
       checkDns(req, res);
     }
   }
 
   // otherwise, request new access token for Auth0 management API
-  if (!accessExistsAndNotExpired) {
+  if (!accessTokenExistsAndNotExpired) {
     var options = { method: 'POST',
       url: 'https://' + process.env.AUTH0_DOMAIN + '/oauth/token',
       headers: { 'content-type': 'application/json' },
@@ -135,7 +135,7 @@ function getManagementApiToken(req, res) {
       if (error || response.statusCode === 400 || response.statusCode === 401) {
         res.redirect('/');
       } else {
-        AUTH0_MANAGEMENT_API_TOKEN = JSON.parse(response.body)['access_token'];
+        auth0_management_api_token = JSON.parse(response.body)['access_token'];
         checkDns(req, res);
       }
     });
@@ -173,7 +173,7 @@ function checkDns(req, res) {
         request('https://' + process.env.AUTH0_DOMAIN + '/api/v2/connections?name=' + connectionName,
         {
           headers: {
-            'Authorization': 'Bearer ' + AUTH0_MANAGEMENT_API_TOKEN
+            'Authorization': 'Bearer ' + auth0_management_api_token
           },
         }, function (error, response, body) {
           // if connection doesn't exist, create
@@ -279,7 +279,7 @@ function dynamicConnectionRegistrationAtAuth0(req, res, idAuthorityDiscoveryDoc,
     url: 'https://' + process.env.AUTH0_DOMAIN + '/api/v2/connections',
     method: 'POST',
     headers: {
-      'Authorization': 'Bearer ' + AUTH0_MANAGEMENT_API_TOKEN
+      'Authorization': 'Bearer ' + auth0_management_api_token
     },
     json: newConn
   }, function (error, response, body) {
